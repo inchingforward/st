@@ -104,7 +104,7 @@ func main() {
 
     e := echo.New()
     e.Pre(middleware.RemoveTrailingSlash())
-
+    e.Use(middleware.Logger())
     e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 
     e.GET("/", renderHome)
