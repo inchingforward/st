@@ -1,4 +1,0 @@
-{:deps 
- {http-kit {:mvn/version "2.3.0"}
-  ring/ring-servlet {:mvn/version "0.3.11"}
-  compojure {:mvn/version "1.6.1"}}}
