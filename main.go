@@ -117,5 +117,5 @@ func main() {
     e.POST("/stories/:uuid/publish", publishStory)
     e.GET("/stories", renderStoryList)
 
-    e.Logger.Fatal(e.Start(":8009"))
+    e.Logger.Fatal(e.Start(":8011"))
 }
