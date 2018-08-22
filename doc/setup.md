@@ -1,7 +1,7 @@
 # Postgres setup
 
-create role storytellers createdb login;
-create database storytellers owner storytellers;
+    create role storytellers createdb login;
+    create database storytellers owner storytellers;
 
 # Migrations
 
