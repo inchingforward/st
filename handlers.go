@@ -1,6 +1,10 @@
 package main
 
-import "github.com/labstack/echo"
+import (
+	"net/http"
+
+	"github.com/labstack/echo"
+)
 
 func renderHome(c echo.Context) error {
 	return renderTemplate(c, "home.html")
@@ -17,7 +21,7 @@ func renderCreateStory(c echo.Context) error {
 
 func createStory(c echo.Context) error {
 	// FIXME: Create Story record, redirect to edit page using story uuid.
-	return renderTemplate(c, "story_create.html")
+	return c.Redirect(http.StatusSeeOther, "/stories/foo/edit")
 }
 
 func renderEditStory(c echo.Context) error {
@@ -28,12 +32,14 @@ func renderEditStory(c echo.Context) error {
 
 func renderPublishStory(c echo.Context) error {
 	// FIXME: Summarize story information in a template, allowing the author to change details.
+	// FIXME: Don't allow an already published story to be accessed?
 	return renderTemplate(c, "story_publish.html")
 }
 
 func publishStory(c echo.Context) error {
-	// FIXME: Finalize the story by setting the publish date.
-	return renderTemplate(c, "story_publish.html")
+	// FIXME: Don't let an already published story be published.
+	// FIXME: Redirect to the actual story uuid.
+	return c.Redirect(http.StatusSeeOther, "/stories/foo")
 }
 
 func renderStoryList(c echo.Context) error {
@@ -43,5 +49,6 @@ func renderStoryList(c echo.Context) error {
 
 func renderStory(c echo.Context) error {
 	// FIXME: Pull up story by uuid.
+	// FIXME: Don't pull up the story if it hasn't been published.
 	return renderTemplate(c, "story.html")
 }

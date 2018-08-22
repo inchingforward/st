@@ -28,11 +28,11 @@ func main() {
 	e.GET("/", renderHome)
 	e.GET("/about", renderAbout)
 	e.GET("/stories/create", renderCreateStory)
-	e.POST("/stories/:uuid/create", createStory)
+	e.POST("/stories/create", createStory)
 	e.GET("/stories/:uuid", renderStory)
 	e.GET("/stories/:uuid/edit", renderEditStory)
 	e.GET("/stories/:uuid/publish", renderPublishStory)
-	e.POST("/stories/:uuid/publish", publishStory)
+	e.POST("/stories/publish", publishStory)
 	e.GET("/stories", renderStoryList)
 
 	e.Logger.Fatal(e.Start(":8011"))
