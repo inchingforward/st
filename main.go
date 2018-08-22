@@ -11,8 +11,6 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-
-	_ "github.com/lib/pq"
 )
 
 var (

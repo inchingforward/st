@@ -1,9 +1,10 @@
 package main
 
 import (
-    "time"
+	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 )
 
 var (
@@ -18,7 +19,7 @@ type Story struct {
 	Private     bool         `db:"private"`
 	StartedAt   time.Time    `db:"started_at"`
 	Published   bool         `db:"published"`
-	PublishedAt sql.NullTime `db:"published_at"`
+	PublishedAt pq.NullTime `db:"published_at"`
 }
 
 type StoryPart struct {
