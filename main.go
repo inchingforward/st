@@ -3,16 +3,32 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 
 	"github.com/flosch/pongo2"
 
+	"github.com/jmoiron/sqlx"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+
+	_ "github.com/lib/pq"
 )
 
 var (
 	debug = false
 )
+
+func init() {
+	x, err := sqlx.Connect("postgres", "user=storytellers dbname=storytellers sslmode=disable")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("connected to db")
+	db = x
+}
 
 func main() {
 	flag.BoolVar(&debug, "debug", false, "true to enable debug")
@@ -25,15 +41,15 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 
-	e.GET("/", renderHome)
-	e.GET("/about", renderAbout)
-	e.GET("/stories/create", renderCreateStory)
+	e.GET("/", getHome)
+	e.GET("/about", getAbout)
+	e.GET("/stories/create", getCreateStory)
 	e.POST("/stories/create", createStory)
-	e.GET("/stories/:uuid", renderStory)
-	e.GET("/stories/:uuid/edit", renderEditStory)
-	e.GET("/stories/:uuid/publish", renderPublishStory)
+	e.GET("/stories/:uuid", getStory)
+	e.GET("/stories/:uuid/edit", getEditStory)
+	e.GET("/stories/:uuid/publish", getPublishStory)
 	e.POST("/stories/publish", publishStory)
-	e.GET("/stories", renderStoryList)
+	e.GET("/stories", getStoryList)
 
 	e.Logger.Fatal(e.Start(":8011"))
 }
