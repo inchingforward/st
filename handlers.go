@@ -88,15 +88,70 @@ func getEditStory(c echo.Context) error {
 }
 
 func getPublishStory(c echo.Context) error {
-	// FIXME: Summarize story information in a template, allowing the author to change details.
-	// FIXME: Don't allow an already published story to be accessed?
-	return renderTemplate(c, "story_publish.html")
+	uuid := c.Param("uuid")
+
+	if uuid == "" {
+		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
+			"ErrorTitle": "Invalid Story ID",
+			"Error":      "Please use a valid Story ID.",
+		})
+	}
+
+	story, err := selectEditableStory(uuid)
+
+	if err != nil {
+		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
+			"ErrorTitle": "Not Found",
+			"Error":      "The Story ID was not found.",
+		})
+	}
+
+	return c.Render(http.StatusOK, "story_publish.html", pongo2.Context{
+		"Story": story,
+	})
 }
 
 func publishStory(c echo.Context) error {
-	// FIXME: Don't let an already published story be published.
-	// FIXME: Redirect to the actual story uuid.
-	return c.Redirect(http.StatusSeeOther, "/stories/foo")
+	uuid := c.FormValue("uuid")
+	if uuid == "" {
+		return c.Render(http.StatusBadRequest, "story_publish.html", pongo2.Context{
+			"Error": "Invalid fields",
+		})
+	}
+
+	story, err := selectEditableStory(uuid)
+	if err != nil {
+		return c.Render(http.StatusNotFound, "error.html", pongo2.Context{
+			"ErrorTitle": "Invalid Story",
+			"Error":      err.Error(),
+		})
+	}
+
+	updatedTitle := c.FormValue("title")
+	if updatedTitle == "" {
+		return c.Render(http.StatusBadRequest, "story_publish.html", pongo2.Context{
+			"Error": "Invalid fields",
+		})
+	}
+
+	updatedAuthors := c.FormValue("authors")
+	if updatedAuthors == "" {
+		return c.Render(http.StatusBadRequest, "story_publish.html", pongo2.Context{
+			"Error": "Authors is required",
+		})
+	}
+
+	updatedPrivate := c.FormValue("private") == "on"
+
+	story.Title = updatedTitle
+	story.Authors = updatedAuthors
+	story.Private = updatedPrivate
+
+	updatePublishStory(&story)
+
+	storyURL := fmt.Sprintf("/stories/%s", uuid)
+
+	return c.Redirect(http.StatusSeeOther, storyURL)
 }
 
 func getStoryList(c echo.Context) error {

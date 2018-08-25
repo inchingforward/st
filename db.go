@@ -44,3 +44,16 @@ func selectEditableStory(uuid string) (Story, error) {
 
 	return story, err
 }
+
+func updatePublishStory(story *Story) error {
+	_, err := db.Exec(`
+		update story 
+		set    title = $1, 
+				authors = $2, 
+				private = $3, 
+				published = true, 
+				published_at = now() 
+		where   id = $4`, story.Title, story.Authors, story.Private, story.ID)
+
+	return err
+}
