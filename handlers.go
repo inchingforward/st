@@ -25,7 +25,6 @@ func getCreateStory(c echo.Context) error {
 }
 
 func createStory(c echo.Context) error {
-	// FIXME: Create Story record, redirect to edit page using story uuid.
 	story := new(Story)
 	if err := c.Bind(story); err != nil {
 		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
@@ -65,9 +64,6 @@ func createStory(c echo.Context) error {
 }
 
 func getEditStory(c echo.Context) error {
-	// FIXME: Look up story by uuid, return story edit template with story details.
-	// FIXME: Redirect to the view story page if the story has already been published.
-	// FIXME: 404 if the uuid is not found.
 	uuid := c.Param("uuid")
 
 	if uuid == "" {
