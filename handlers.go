@@ -29,19 +29,19 @@ func createStory(c echo.Context) error {
 	story := new(Story)
 	if err := c.Bind(story); err != nil {
 		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
-			"error": "Invalid fields",
+			"Error": "Invalid fields",
 		})
 	}
 
 	if story.Title == "" {
 		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
-			"error": "Title is required",
+			"Error": "Title is required",
 		})
 	}
 
 	if story.Authors == "" {
 		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
-			"error": "Authors is required",
+			"Error": "Authors is required",
 		})
 	}
 
@@ -55,7 +55,7 @@ func createStory(c echo.Context) error {
 
 	if err != nil {
 		return c.Render(http.StatusInternalServerError, "story_create.html", pongo2.Context{
-			"error": err.Error(),
+			"Error": err.Error(),
 		})
 	}
 
@@ -68,7 +68,27 @@ func getEditStory(c echo.Context) error {
 	// FIXME: Look up story by uuid, return story edit template with story details.
 	// FIXME: Redirect to the view story page if the story has already been published.
 	// FIXME: 404 if the uuid is not found.
-	return renderTemplate(c, "story_edit.html")
+	uuid := c.Param("uuid")
+
+	if uuid == "" {
+		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
+			"ErrorTitle": "Invalid Story ID",
+			"Error":      "Please use a valid Story ID.",
+		})
+	}
+
+	story, err := selectEditableStory(uuid)
+
+	if err != nil {
+		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
+			"ErrorTitle": "Not Found",
+			"Error":      "The Story ID was not found.",
+		})
+	}
+
+	return c.Render(http.StatusOK, "story_edit.html", pongo2.Context{
+		"Story": story,
+	})
 }
 
 func getPublishStory(c echo.Context) error {

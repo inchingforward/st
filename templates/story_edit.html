@@ -3,8 +3,18 @@
 {% block content %}
 <h1>Edit Story</h1>
 
+{% if ErrorTitle %}
+<h1>{{ ErrorTitle }}</h1>
+<p>{{ Error }}</p>
+{% endif %}
+
+{% if Story %}
+<h1>{{ Story.Title }}</h1>
+<h2>Authors: {{ Story.Authors }}</h2>
+
 <p>
     <!-- FIXME: If you joined a story, the publish button should be hidden -->
     <a href="/stories/foo/publish">Publish</a>
 </p>
+{% endif %}
 {% endblock %}

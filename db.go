@@ -36,3 +36,11 @@ func insertStory(story *Story) error {
 
 	return err
 }
+
+func selectEditableStory(uuid string) (Story, error) {
+	var story Story
+
+	err := db.Get(&story, "select * from story where uuid = $1 and published = false", uuid)
+
+	return story, err
+}
