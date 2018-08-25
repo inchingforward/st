@@ -24,6 +24,9 @@ func init() {
 		log.Fatal(err)
 	}
 
+	x.SetMaxOpenConns(2)
+	x.SetMaxIdleConns(2)
+
 	fmt.Println("connected to db")
 	db = x
 }
