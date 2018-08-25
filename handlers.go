@@ -1,8 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/satori/go.uuid"
+
+	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
 )
 
@@ -21,7 +26,42 @@ func getCreateStory(c echo.Context) error {
 
 func createStory(c echo.Context) error {
 	// FIXME: Create Story record, redirect to edit page using story uuid.
-	return c.Redirect(http.StatusSeeOther, "/stories/foo/edit")
+	story := new(Story)
+	if err := c.Bind(story); err != nil {
+		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
+			"error": "Invalid fields",
+		})
+	}
+
+	if story.Title == "" {
+		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
+			"error": "Title is required",
+		})
+	}
+
+	if story.Authors == "" {
+		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
+			"error": "Authors is required",
+		})
+	}
+
+	// At this point we have a valid story.
+	story.StartedAt = time.Now()
+
+	uuid, _ := uuid.NewV4()
+	story.UUID = uuid.String()
+
+	err := insertStory(story)
+
+	if err != nil {
+		return c.Render(http.StatusInternalServerError, "story_create.html", pongo2.Context{
+			"error": err.Error(),
+		})
+	}
+
+	editURL := fmt.Sprintf("/stories/%s/edit", uuid)
+
+	return c.Redirect(http.StatusSeeOther, editURL)
 }
 
 func getEditStory(c echo.Context) error {
