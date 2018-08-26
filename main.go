@@ -46,6 +46,8 @@ func main() {
 	e.GET("/about", getAbout)
 	e.GET("/stories/create", getCreateStory)
 	e.POST("/stories/create", createStory)
+	e.GET("/stories/join", getJoinStory)
+	e.POST("/stories/join", joinStory)
 	e.GET("/stories/:uuid", getStory)
 	e.GET("/stories/:uuid/edit", getEditStory)
 	e.GET("/stories/:uuid/publish", getPublishStory)

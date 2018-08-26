@@ -20,7 +20,6 @@ func getAbout(c echo.Context) error {
 }
 
 func getCreateStory(c echo.Context) error {
-	// FIXME: Initial page to create a story...allows user to set title, visibility, etc.
 	return renderTemplate(c, "story_create.html")
 }
 
@@ -57,6 +56,37 @@ func createStory(c echo.Context) error {
 			"Error": err.Error(),
 		})
 	}
+
+	editURL := fmt.Sprintf("/stories/%s/edit", uuid)
+
+	return c.Redirect(http.StatusSeeOther, editURL)
+}
+
+func getJoinStory(c echo.Context) error {
+	return renderTemplate(c, "story_join.html")
+}
+
+func joinStory(c echo.Context) error {
+	uuid := c.FormValue("uuid")
+	authorName := c.FormValue("author_name")
+
+	if uuid == "" {
+		return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
+			"ErrorTitle": "Missing Story Code",
+			"Error":      "Please enter a valid Story Code",
+			"AuthorName": authorName,
+		})
+	}
+
+	if authorName == "" {
+		return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
+			"ErrorTitle": "Missing Name",
+			"Error":      "Please enter your name",
+			"UUID":       uuid,
+		})
+	}
+
+	// FIXME:  add author_name to session
 
 	editURL := fmt.Sprintf("/stories/%s/edit", uuid)
 
