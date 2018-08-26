@@ -22,7 +22,7 @@
         <tr>
             <td><a href="/stories/{{ Story.UUID }}">{{ Story.Title }}</a></td>
             <td>{{ Story.Authors }}</td>
-            <td>{{ Story.PublishedAt }}</td>
+            <td>{{ Story.PublishedAt.Time|time:"01/02/2006" }}</td>
         </tr>
         {% endfor %}
     </tbody>

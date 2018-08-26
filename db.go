@@ -61,7 +61,7 @@ func updatePublishStory(story *Story) error {
 func selectPublishedStories() ([]Story, error) {
 	stories := []Story{}
 
-	err := db.Select(&stories, "select * from story where published = true order by published_at")
+	err := db.Select(&stories, "select * from story where published = true order by published_at desc")
 
 	return stories, err
 }
