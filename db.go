@@ -57,3 +57,11 @@ func updatePublishStory(story *Story) error {
 
 	return err
 }
+
+func selectPublishedStories() ([]Story, error) {
+	stories := []Story{}
+
+	err := db.Select(&stories, "select * from story where published = true order by published_at")
+
+	return stories, err
+}

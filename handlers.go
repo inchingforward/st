@@ -155,8 +155,18 @@ func publishStory(c echo.Context) error {
 }
 
 func getStoryList(c echo.Context) error {
-	// FIXME: Pull up list of publicly-visible stories.
-	return renderTemplate(c, "story_list.html")
+	stories, err := selectPublishedStories()
+
+	if err != nil {
+		return c.Render(http.StatusInternalServerError, "story_list.html", pongo2.Context{
+			"ErrorTitle": "Invalid fields",
+			"Error":      err.Error(),
+		})
+	}
+
+	return c.Render(http.StatusOK, "story_list.html", pongo2.Context{
+		"Stories": stories,
+	})
 }
 
 func getStory(c echo.Context) error {
