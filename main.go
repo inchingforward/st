@@ -45,17 +45,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 
-	e.GET("/", getHome)
-	e.GET("/about", getAbout)
-	e.GET("/stories/create", getCreateStory)
-	e.POST("/stories/create", createStory)
-	e.GET("/stories/join", getJoinStory)
-	e.POST("/stories/join", joinStory)
-	e.GET("/stories/:uuid", getStory)
-	e.GET("/stories/:uuid/edit", getEditStory)
-	e.GET("/stories/:uuid/publish", getPublishStory)
-	e.POST("/stories/publish", publishStory)
-	e.GET("/stories", getStoryList)
+	addHandlers(e)
 
 	e.Logger.Fatal(e.Start(":8011"))
 }

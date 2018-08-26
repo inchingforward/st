@@ -10,6 +10,20 @@ import (
 	"github.com/labstack/echo"
 )
 
+func addHandlers(e *echo.Echo) {
+	e.GET("/", getHome)
+	e.GET("/about", getAbout)
+	e.GET("/stories/create", getCreateStory)
+	e.POST("/stories/create", createStory)
+	e.GET("/stories/join", getJoinStory)
+	e.POST("/stories/join", joinStory)
+	e.GET("/stories/:uuid", getStory)
+	e.GET("/stories/:uuid/edit", getEditStory)
+	e.GET("/stories/:uuid/publish", getPublishStory)
+	e.POST("/stories/publish", publishStory)
+	e.GET("/stories", getStoryList)
+}
+
 func getHome(c echo.Context) error {
 	return renderTemplate(c, "home.html")
 }
