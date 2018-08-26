@@ -21,7 +21,6 @@ var (
 
 func init() {
 	x, err := sqlx.Connect("postgres", "user=storytellers dbname=storytellers sslmode=disable")
-
 	if err != nil {
 		log.Fatal(err)
 	}

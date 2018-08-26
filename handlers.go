@@ -44,11 +44,9 @@ func createStory(c echo.Context) error {
 
 	// At this point we have a valid story.
 	story.StartedAt = time.Now()
-
 	story.UUID = generateStoryUUID()
 
 	err := insertStory(story)
-
 	if err != nil {
 		return c.Render(http.StatusInternalServerError, "story_create.html", pongo2.Context{
 			"Error": err.Error(),
@@ -93,7 +91,6 @@ func joinStory(c echo.Context) error {
 
 func getEditStory(c echo.Context) error {
 	uuid := c.Param("uuid")
-
 	if uuid == "" {
 		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
 			"ErrorTitle": "Invalid Story ID",
@@ -102,7 +99,6 @@ func getEditStory(c echo.Context) error {
 	}
 
 	story, err := selectEditableStory(uuid)
-
 	if err != nil {
 		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
 			"ErrorTitle": "Not Found",
@@ -117,7 +113,6 @@ func getEditStory(c echo.Context) error {
 
 func getPublishStory(c echo.Context) error {
 	uuid := c.Param("uuid")
-
 	if uuid == "" {
 		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
 			"ErrorTitle": "Invalid Story ID",
@@ -126,7 +121,6 @@ func getPublishStory(c echo.Context) error {
 	}
 
 	story, err := selectEditableStory(uuid)
-
 	if err != nil {
 		return c.Render(http.StatusBadRequest, "story_edit.html", pongo2.Context{
 			"ErrorTitle": "Not Found",
@@ -184,7 +178,6 @@ func publishStory(c echo.Context) error {
 
 func getStoryList(c echo.Context) error {
 	stories, err := selectPublishedStories()
-
 	if err != nil {
 		return c.Render(http.StatusInternalServerError, "story_list.html", pongo2.Context{
 			"ErrorTitle": "Invalid fields",
@@ -199,7 +192,6 @@ func getStoryList(c echo.Context) error {
 
 func getStory(c echo.Context) error {
 	uuid := c.Param("uuid")
-
 	if uuid == "" {
 		return c.Render(http.StatusNotFound, "error.html", pongo2.Context{
 			"ErrorTitle": "Invalid Story",
