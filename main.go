@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/flosch/pongo2"
 
@@ -36,6 +38,8 @@ func main() {
 	flag.Parse()
 
 	fmt.Printf("debug: %v\n", debug)
+
+	rand.Seed(time.Now().UnixNano())
 
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())

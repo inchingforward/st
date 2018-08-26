@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"time"
-
-	"github.com/satori/go.uuid"
 
 	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
@@ -46,8 +45,7 @@ func createStory(c echo.Context) error {
 	// At this point we have a valid story.
 	story.StartedAt = time.Now()
 
-	uuid, _ := uuid.NewV4()
-	story.UUID = uuid.String()
+	story.UUID = generateStoryUUID()
 
 	err := insertStory(story)
 
@@ -57,7 +55,7 @@ func createStory(c echo.Context) error {
 		})
 	}
 
-	editURL := fmt.Sprintf("/stories/%s/edit", uuid)
+	editURL := fmt.Sprintf("/stories/%s/edit", story.UUID)
 
 	return c.Redirect(http.StatusSeeOther, editURL)
 }
@@ -229,4 +227,19 @@ func getStory(c echo.Context) error {
 		"Story": story,
 		"Parts": parts,
 	})
+}
+
+func generateStoryUUID() string {
+	length := 5
+	bytes := make([]byte, length)
+	capitalA := 65
+	capitalZ := 90
+
+	for i := 0; i < length; i++ {
+		bytes[i] = byte(capitalA + rand.Intn(capitalZ-capitalA))
+	}
+
+	// FIXME: Add db check.
+
+	return string(bytes)
 }

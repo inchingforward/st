@@ -40,7 +40,7 @@ func insertStory(story *Story) error {
 func selectEditableStory(uuid string) (Story, error) {
 	var story Story
 
-	err := db.Get(&story, "select * from story where uuid = $1 and published = false", uuid)
+	err := db.Get(&story, "select * from story where uuid = upper($1) and published = false", uuid)
 
 	return story, err
 }
@@ -69,7 +69,7 @@ func selectPublishedStories() ([]Story, error) {
 func selectPublishedStory(uuid string) (*Story, error) {
 	story := new(Story)
 
-	err := db.Get(story, "select * from story where published = true and uuid = $1", uuid)
+	err := db.Get(story, "select * from story where published = true and uuid = upper($1)", uuid)
 
 	return story, err
 }
