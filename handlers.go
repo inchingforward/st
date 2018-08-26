@@ -170,7 +170,33 @@ func getStoryList(c echo.Context) error {
 }
 
 func getStory(c echo.Context) error {
-	// FIXME: Pull up story by uuid regardless of visibility.
-	// FIXME: Don't pull up the story if it hasn't been published.
-	return renderTemplate(c, "story.html")
+	uuid := c.Param("uuid")
+
+	if uuid == "" {
+		return c.Render(http.StatusNotFound, "error.html", pongo2.Context{
+			"ErrorTitle": "Invalid Story",
+			"Error":      "Missing story id",
+		})
+	}
+
+	story, err := selectPublishedStory(uuid)
+	if err != nil {
+		return c.Render(http.StatusInternalServerError, "error.html", pongo2.Context{
+			"ErrorTitle": "Error",
+			"Error":      err.Error(),
+		})
+	}
+
+	parts, err := selectPublishedStoryParts(story.ID)
+	if err != nil {
+		return c.Render(http.StatusInternalServerError, "error.html", pongo2.Context{
+			"ErrorTitle": "Error",
+			"Error":      err.Error(),
+		})
+	}
+
+	return c.Render(http.StatusOK, "story.html", pongo2.Context{
+		"Story": story,
+		"Parts": parts,
+	})
 }

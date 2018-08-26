@@ -65,3 +65,19 @@ func selectPublishedStories() ([]Story, error) {
 
 	return stories, err
 }
+
+func selectPublishedStory(uuid string) (*Story, error) {
+	story := new(Story)
+
+	err := db.Get(story, "select * from story where published = true and uuid = $1", uuid)
+
+	return story, err
+}
+
+func selectPublishedStoryParts(storyID uint64) ([]StoryPart, error) {
+	parts := []StoryPart{}
+
+	err := db.Select(&parts, "select * from story_part where story_id = $1 order by part_num", storyID)
+
+	return parts, err
+}

@@ -3,5 +3,20 @@
 {% block content %}
 <h1>Story</h1>
 
-<p>This is a view-only version of the story.</p>
+{% if ErrorTitle %}
+<h1>{{ ErrorTitle }}</h1>
+<p>{{ Error }}</p>
+{% endif %}
+
+{% if Story %}
+<h2>{{ Story.Title }}</h2>
+<h3>{{ Story.Authors }}</h3>
+{% endif %}
+
+{% if Parts %}
+    <p>Would show parts here.</p>
+{% else %}
+    <p>No parts in this story!</p>
+{% endif %}
+
 {% endblock %}
