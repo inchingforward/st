@@ -3,13 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"math/rand"
 	"time"
 
 	"github.com/flosch/pongo2"
-
-	"github.com/jmoiron/sqlx"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
@@ -20,16 +17,7 @@ var (
 )
 
 func init() {
-	x, err := sqlx.Connect("postgres", "user=storytellers dbname=storytellers sslmode=disable")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	x.SetMaxOpenConns(2)
-	x.SetMaxIdleConns(2)
-
-	fmt.Println("connected to db")
-	db = x
+	initDB()
 }
 
 func main() {

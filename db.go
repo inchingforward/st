@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -29,6 +31,20 @@ type StoryPart struct {
 	PartText  string    `db:"part_text" json:"part_text"`
 	WrittenBy string    `db:"written_by" json:"written_by"`
 	WrittenAt time.Time `db:"written_at"`
+}
+
+func initDB() {
+	x, err := sqlx.Connect("postgres", "user=storytellers dbname=storytellers sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	x.SetMaxOpenConns(2)
+	x.SetMaxIdleConns(2)
+
+	db = x
+
+	fmt.Println("connected to db")
 }
 
 func insertStory(story *Story) error {
