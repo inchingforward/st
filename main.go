@@ -6,8 +6,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/flosch/pongo2"
-
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -31,8 +29,8 @@ func main() {
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
-	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 
+	setRenderer(e)
 	addHandlers(e)
 
 	e.Logger.Fatal(e.Start(":8011"))
