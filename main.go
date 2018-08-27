@@ -30,7 +30,7 @@ func main() {
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
 
-	setRenderer(e)
+	setRenderer(e, debug)
 	addHandlers(e)
 
 	e.Logger.Fatal(e.Start(":8011"))

@@ -44,6 +44,6 @@ func (r *Renderer) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return template.ExecuteWriter(pctx, w)
 }
 
-func setRenderer(e *echo.Echo) {
+func setRenderer(e *echo.Echo, debug bool) {
 	e.Renderer = &Renderer{TemplateDir: "templates", Reload: debug, TemplateCache: make(map[string]*pongo2.Template)}
 }
