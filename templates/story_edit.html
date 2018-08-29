@@ -10,9 +10,7 @@
 
 {% if Story %}
 <h1>{{ Story.Title }}</h1>
-<h2>Authors: {{ Story.Authors }}</h2>
-
-{{ Session.Values.Creator }}
+<h2>{{ Session.Values.Author }}</h2>
 
 {% if Session.Values.Creator %}
 <p><a href="/stories/{{ Story.UUID }}/publish">Publish</a></p>

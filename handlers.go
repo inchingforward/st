@@ -51,12 +51,6 @@ func createStory(c echo.Context) error {
 		})
 	}
 
-	if story.Authors == "" {
-		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
-			"Error": "Authors is required",
-		})
-	}
-
 	author := c.FormValue("author")
 	if author == "" {
 		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
@@ -189,17 +183,11 @@ func publishStory(c echo.Context) error {
 		})
 	}
 
-	updatedAuthors := c.FormValue("authors")
-	if updatedAuthors == "" {
-		return c.Render(http.StatusBadRequest, "story_publish.html", pongo2.Context{
-			"Error": "Authors is required",
-		})
-	}
+	// FIXME: combine all related authors.
 
 	updatedPrivate := c.FormValue("private") == "on"
 
 	story.Title = updatedTitle
-	story.Authors = updatedAuthors
 	story.Private = updatedPrivate
 
 	updatePublishStory(&story)
@@ -255,13 +243,13 @@ func getStory(c echo.Context) error {
 }
 
 func generateStoryUUID() string {
-	length := 5
+	length := 6
 	bytes := make([]byte, length)
-	capitalA := 65
-	capitalZ := 90
+	lowerA := 97
+	lowerZ := 122
 
 	for i := 0; i < length; i++ {
-		bytes[i] = byte(capitalA + rand.Intn(capitalZ-capitalA))
+		bytes[i] = byte(lowerA + rand.Intn(lowerZ-lowerA))
 	}
 
 	// FIXME: Add db check.
