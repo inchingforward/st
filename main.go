@@ -29,6 +29,7 @@ func main() {
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())
+	e.Static("/static", "static")
 
 	setRenderer(e, debug)
 	addHandlers(e)
