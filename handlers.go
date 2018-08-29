@@ -8,6 +8,7 @@ import (
 
 	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo-contrib/session"
 )
 
 func addHandlers(e *echo.Echo) {
@@ -56,6 +57,18 @@ func createStory(c echo.Context) error {
 		})
 	}
 
+	author := c.FormValue("author")
+	if author == "" {
+		return c.Render(http.StatusBadRequest, "story_create.html", pongo2.Context{
+			"Error": "Your name is required",
+		})
+	}
+
+	sess, _ := session.Get("session", c)
+	sess.Values["Author"] = author
+	sess.Values["Creator"] = true
+	sess.Save(c.Request(), c.Response())
+
 	// At this point we have a valid story.
 	story.StartedAt = time.Now()
 	story.UUID = generateStoryUUID()
@@ -78,13 +91,13 @@ func getJoinStory(c echo.Context) error {
 
 func joinStory(c echo.Context) error {
 	uuid := c.FormValue("uuid")
-	authorName := c.FormValue("author_name")
+	authorName := c.FormValue("author")
 
 	if uuid == "" {
 		return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
 			"ErrorTitle": "Missing Story Code",
 			"Error":      "Please enter a valid Story Code",
-			"AuthorName": authorName,
+			"Author":     authorName,
 		})
 	}
 
@@ -96,7 +109,10 @@ func joinStory(c echo.Context) error {
 		})
 	}
 
-	// FIXME:  add author_name to session
+	sess, _ := session.Get("session", c)
+	sess.Values["Author"] = authorName
+	sess.Values["Creator"] = false
+	sess.Save(c.Request(), c.Response())
 
 	editURL := fmt.Sprintf("/stories/%s/edit", uuid)
 
@@ -120,8 +136,11 @@ func getEditStory(c echo.Context) error {
 		})
 	}
 
+	sess, _ := session.Get("session", c)
+
 	return c.Render(http.StatusOK, "story_edit.html", pongo2.Context{
-		"Story": story,
+		"Story":   story,
+		"Session": sess,
 	})
 }
 

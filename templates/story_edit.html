@@ -12,9 +12,16 @@
 <h1>{{ Story.Title }}</h1>
 <h2>Authors: {{ Story.Authors }}</h2>
 
-<p>
-    <!-- FIXME: If you joined a story, the publish button should be hidden -->
-    <a href="/stories/{{ Story.UUID }}/publish">Publish</a>
-</p>
+{{ Session.Values.Creator }}
+
+{% if Session.Values.Creator %}
+<p><a href="/stories/{{ Story.UUID }}/publish">Publish</a></p>
 {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+StoryTellers.initAuthor("{{ Story.UUID }}", "{{ Session.Values.Author }}");
+</script>
 {% endblock %}
