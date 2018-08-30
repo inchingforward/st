@@ -12,10 +12,13 @@
 <h1>{{ Story.Title }}</h1>
 <h2>{{ Session.Values.Author }}</h2>
 
+{% if Session.Values.Creator %}
+<h3>Invite a friend with this code: <span style="background-color: cornsilk">{{ Story.UUID }}</span></h3>
+{% endif %}
+
 <p>
-    <textarea name="chat_log" id="chat_log" rows="20" cols="40"></textarea><br />
     <input type="text" name="chat_input" id="chat_input" /><br />
-    
+    <textarea name="chat_log" id="chat_log" rows="20" cols="40"></textarea><br />
 </p>
 
 {% if Session.Values.Creator %}
@@ -44,5 +47,7 @@ text.onkeydown = function (e) {
         text.value = "";
     }
 };
+
+text.focus();
 </script>
 {% endblock %}
