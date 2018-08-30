@@ -10,20 +10,29 @@
 
 {% if Story %}
 <h1>{{ Story.Title }}</h1>
-<h2>{{ Session.Values.Author }}</h2>
+<h3>{{ Session.Values.Author }}</h2>
 
 {% if Session.Values.Creator %}
-<h3>Invite a friend with this code: <span style="background-color: cornsilk">{{ Story.UUID }}</span></h3>
+<h4>Invite a friend with this code: <span style="background-color: cornsilk">{{ Story.UUID }}</span></h3>
 {% endif %}
 
-<p>
-    <input type="text" name="chat_input" id="chat_input" /><br />
-    <textarea name="chat_log" id="chat_log" rows="20" cols="40"></textarea><br />
-</p>
+<div class="container">
+    <div class="row">
+        <div class="column column-25">
+            <h3>Chat</h3>
+            <textarea name="chat_log" id="chat_log" rows="30" cols="40" style="height: 200px;"></textarea><br />
+            <input type="text" name="chat_input" id="chat_input" /><br />
+        </div>
+        <div class="column column-75">
+            <h3>Story</h3>
+            <div class="story_text" style="height: 212px; border: 1px solid purple;"></div>
 
-{% if Session.Values.Creator %}
-<p><a href="/stories/{{ Story.UUID }}/publish">Publish</a></p>
-{% endif %}
+            {% if Session.Values.Creator %}
+            <p><a href="/stories/{{ Story.UUID }}/publish">Publish</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endif %}
 {% endblock %}
 
@@ -39,6 +48,7 @@ var text = document.getElementById("chat_input");
 
 ws.onmessage = function (msg) {
     chat.value += msg.data + "\n";
+    chat.scrollTop = chat.scrollHeight;
 };
 
 text.onkeydown = function (e) {

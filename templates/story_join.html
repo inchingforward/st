@@ -10,9 +10,18 @@
 
 <form method="POST" action="/stories/join">
     <label for="uuid">Story Code:</label><input type="text" name="uuid" id="uuid" value="{{ UUID }}" />
-    <label for="author_name">Your Name:</label><input type="text" name="author" id="author" value="{{ Author }}" />
+    <label for="author">Your Name:</label><input type="text" name="author" id="author" value="{{ Author }}" />
 
-    <input type="submit" value="Join">
+    <input class="button" type="submit" value="Join">
 </form>
 
+{% endblock %}
+
+{% block script %}
+<script>
+    var uuid = document.getElementById("uuid");
+    if (uuid) {
+        document.getElementById("author").focus();
+    }
+</script>
 {% endblock %}

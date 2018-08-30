@@ -20,6 +20,7 @@ func addHandlers(e *echo.Echo) {
 	e.GET("/about", getAbout)
 	e.GET("/stories/create", getCreateStory)
 	e.POST("/stories/create", createStory)
+	e.GET("/stories/:uuid/join", getJoinStory)
 	e.GET("/stories/join", getJoinStory)
 	e.POST("/stories/join", joinStory)
 	e.GET("/stories/:uuid", getStory)
@@ -78,6 +79,7 @@ func createStory(c echo.Context) error {
 	// At this point we have a valid story.
 	story.StartedAt = time.Now()
 	story.UUID = generateStoryUUID()
+	story.Private = false
 
 	err := insertStory(story)
 	if err != nil {
@@ -92,7 +94,10 @@ func createStory(c echo.Context) error {
 }
 
 func getJoinStory(c echo.Context) error {
-	return renderTemplate(c, "story_join.html")
+	uuid := c.Param("uuid")
+	return c.Render(http.StatusOK, "story_join.html", pongo2.Context{
+		"UUID": uuid,
+	})
 }
 
 func joinStory(c echo.Context) error {
