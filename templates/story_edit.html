@@ -48,6 +48,10 @@ text.onkeydown = function (e) {
     }
 };
 
+ws.onopen = function() {
+    ws.send("** {{ Session.Values.Author }} has joined!");
+}
+
 text.focus();
 </script>
 {% endblock %}
