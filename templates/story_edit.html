@@ -12,6 +12,12 @@
 <h1>{{ Story.Title }}</h1>
 <h2>{{ Session.Values.Author }}</h2>
 
+<p>
+    <textarea name="chat_log" id="chat_log" rows="20" cols="40"></textarea><br />
+    <input type="text" name="chat_input" id="chat_input" /><br />
+    
+</p>
+
 {% if Session.Values.Creator %}
 <p><a href="/stories/{{ Story.UUID }}/publish">Publish</a></p>
 {% endif %}
@@ -20,6 +26,23 @@
 
 {% block script %}
 <script>
-StoryTellers.initAuthor("{{ Story.UUID }}", "{{ Session.Values.Author }}");
+//StoryTellers.initAuthor("{{ Story.UUID }}", "{{ Session.Values.Author }}");
+
+var url = "ws://" + window.location.host + "/ws";
+var ws = new WebSocket(url);
+
+var chat = document.getElementById("chat_log");
+var text = document.getElementById("chat_input");
+
+ws.onmessage = function (msg) {
+    chat.value += msg.data + "\n";
+};
+
+text.onkeydown = function (e) {
+    if (e.keyCode === 13 && text.value !== "") {
+        ws.send("<{{ Session.Values.Author }}> " + text.value);
+        text.value = "";
+    }
+};
 </script>
 {% endblock %}
