@@ -37,30 +37,9 @@
 
 {% block script %}
 <script>
-//StoryTellers.initAuthor("{{ Story.UUID }}", "{{ Session.Values.Author }}");
-
-var url = "ws://" + window.location.host + "/ws";
-var ws = new WebSocket(url);
-
 var chat = document.getElementById("chat_log");
 var text = document.getElementById("chat_input");
 
-ws.onmessage = function (msg) {
-    chat.value += msg.data + "\n";
-    chat.scrollTop = chat.scrollHeight;
-};
-
-text.onkeydown = function (e) {
-    if (e.keyCode === 13 && text.value !== "") {
-        ws.send("<{{ Session.Values.Author }}> " + text.value);
-        text.value = "";
-    }
-};
-
-ws.onopen = function() {
-    ws.send("** {{ Session.Values.Author }} has joined!");
-}
-
-text.focus();
+StoryTellers.init("{{ Story.UUID }}", "{{ Session.Values.Author }}", chat, text);
 </script>
 {% endblock %}
