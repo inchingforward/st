@@ -19,13 +19,16 @@
     <div class="row">
         <div class="column column-25">
             <h3>Chat</h3>
-            <textarea name="chat_log" id="chat_log" rows="30" cols="40" style="height: 200px;"></textarea><br />
-            <input type="text" name="chat_input" id="chat_input" /><br />
+            <textarea name="chat_area" id="chat_area" rows="30" cols="40"></textarea><br />
+            <input type="text" name="chat_input" id="chat_input" />
         </div>
         <div class="column column-75">
             <h3>Story</h3>
-            <div class="story_text" style="height: 212px; border: 1px solid purple;"></div>
-
+            
+            <div name="story_div" id="story_div"></div>
+            <textarea name="story_area" id="story_area" rows="30" cols="40"></textarea>
+            <button class="button" id="add_to_story_button">Add to Story</button>
+            
             {% if Session.Values.Creator %}
             <p><a href="/stories/{{ Story.UUID }}/publish">Publish</a></p>
             {% endif %}
@@ -37,9 +40,6 @@
 
 {% block script %}
 <script>
-var chat = document.getElementById("chat_log");
-var text = document.getElementById("chat_input");
-
-StoryTellers.init("{{ Story.UUID }}", "{{ Session.Values.Author }}", chat, text);
+StoryTellers.init("{{ Story.UUID }}", "{{ Session.Values.Author }}");
 </script>
 {% endblock %}

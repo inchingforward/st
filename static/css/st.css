@@ -1,2 +1,6 @@
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
+
+#chat_area { height: 200px; }
+#story_div { height: 212px; border: 1px solid purple; overflow-y:scroll; }
+#story_area { height: 75px; margin-top: 10px; }

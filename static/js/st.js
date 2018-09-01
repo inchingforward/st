@@ -5,47 +5,86 @@ var StoryTellers = StoryTellers || (function() {
     const STORY_ADD = "STORY_ADD";
     const STORY_CHANGE_EDITOR = "STORY_CHANGE_EDITOR";
 
+    var ws, storyCode, authorName, chatArea, chatInput, storyDiv, storyArea, addToStoryButton;
+
     function Message(messageType, authorName, content) {
         this.messageType = messageType;
         this.authorName = authorName;
         this.content = content;
     }
 
-    function init(storyCode, authorName, chat, text) {
-        console.log("would initialize", storyCode, authorName);
+    function initPageElements() {
+        chatArea = document.getElementById("chat_area");
+        chatInput = document.getElementById("chat_input");
+        storyDiv = document.getElementById("story_div");
+        storyArea = document.getElementById("story_area");
+        addToStoryButton = document.getElementById("add_to_story_button");
+    }
+
+    function init(code, author) {
+        storyCode = code;
+        authorName = author;
+
+        initPageElements();
 
         var url = "ws://" + window.location.host + "/ws";
-        var ws = new WebSocket(url);
+        ws = new WebSocket(url);
 
         ws.onmessage = function (msg) {
             var message = JSON.parse(msg.data);
 
             if (message.messageType === ACTION_JOIN) {
-                chat.value += "** " + message.authorName + " has joined **\n";
+                chatArea.value += "** " + message.authorName + " has joined **\n";
             } else if (message.messageType === CHAT) {
-                chat.value += "<" + message.authorName + "> " + message.content + "\n";
+                chatArea.value += "<" + message.authorName + "> " + message.content + "\n";
+            } else if (message.messageType === STORY_ADD) {
+                storyDiv.innerHTML += "<p title=\"" + message.authorName + "\">" + message.content + "</p>"
+                storyDiv.scrollTop = storyDiv.scrollHeight;
+            } else if (message.messageType === STORY_CHANGE_EDITOR) {
+                var canEdit = message.authorName === authorName;
+                
+                addToStoryButton.disabled = !canEdit;
             }
 
-            chat.scrollTop = chat.scrollHeight;
+            chatArea.scrollTop = chatArea.scrollHeight;
         };
 
-        text.onkeydown = function (e) {
-            if (e.keyCode === 13 && text.value !== "") {
-                var message = new Message(CHAT, authorName, text.value);
+        chatInput.onkeydown = function (e) {
+            if (e.keyCode === 13 && chatInput.value !== "") {
+                var message = new Message(CHAT, authorName, chatInput.value);
                 
                 ws.send(JSON.stringify(message));
 
-                text.value = "";
+                chatInput.value = "";
             }
         };
 
+        addToStoryButton.onclick = function() {
+            var content = storyArea.value;
+            if (!content) {
+                alert("You haven't typed anything!");
+                storyArea.focus();
+                return;
+            }
+
+            var message = new Message(STORY_ADD, authorName, content);
+            
+            ws.send(JSON.stringify(message));
+
+            storyArea.value = "";
+        }
+
         ws.onopen = function() {
             var message = new Message(ACTION_JOIN, authorName);
-            
             ws.send(JSON.stringify(message))
         }
 
-        text.focus();
+        chatInput.focus();
+    }
+
+    function addToStory(text) {
+        var message = new Message(STORY_ADD, authorName, text);
+        ws.send(JSON.stringify(message));
     }
 
     return {
