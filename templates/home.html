@@ -1,10 +1,28 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h1>Home</h1>
 
-<p><a href="/stories/create">Create a New Story</a></p>
-<p><a href="/stories/join">Join Story</a></p>
-<p><a href="/stories">Published Stories</a></p>
+<div class="container">
+    <div class="row">
+        <div class="column column-25"></div>
+        <div class="column column-50">
+
+<h1>Story Tellers</h1>
+
+<h4>Create stories with a friend.</h4>
+
+<p>If you're just looking around, open 2 browser windows.  <a href="/stories/create">Create</a> a new story in one, then <a href="/stories/join">join</a> the story using the story's Story Code in the other.</p>
+
+<ul>
+    <li><a href="/stories/create">Create a new story</a></li>
+    <li><a href="/stories/join">Join a story</a></li>
+    <li><a href="/stories">View published stories</a></li>
+</ul>
+
+</div>
+<div class="column column-25"></div>
+</div>
+</div>
+
 
 {% endblock %}
