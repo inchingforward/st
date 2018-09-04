@@ -9,10 +9,9 @@
 
 {% if Story %}
 <h1>{{ Story.Title }}</h1>
-<h3>{{ Session.Values.Author }}</h2>
 
 {% if Session.Values.Creator %}
-<h4>Invite a friend with this code: <span style="background-color: cornsilk">{{ Story.UUID }}</span></h3>
+<p>Invite a friend with this URL:  <a href="http://{{ Host }}/stories/{{ Story.UUID }}/join">http://{{ Host }}/stories/{{ Story.UUID }}/join</a></p>
 {% endif %}
 
 <div class="container">

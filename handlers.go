@@ -39,6 +39,7 @@ func addHandlers(e *echo.Echo) {
 }
 
 func getHome(c echo.Context) error {
+	fmt.Println(c.Request().Host)
 	return renderTemplate(c, "home.html")
 }
 
@@ -152,6 +153,7 @@ func getEditStory(c echo.Context) error {
 	return c.Render(http.StatusOK, "story_edit.html", pongo2.Context{
 		"Story":   story,
 		"Session": sess,
+		"Host":    c.Request().Host,
 	})
 }
 
