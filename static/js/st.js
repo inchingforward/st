@@ -27,7 +27,7 @@ var StoryTellers = StoryTellers || (function() {
 
         initPageElements();
 
-        var url = "ws://" + window.location.host + "/ws";
+        var url = "ws://" + window.location.host + "/ws/" + storyCode;
         ws = new WebSocket(url);
 
         ws.onmessage = function (msg) {

@@ -28,13 +28,15 @@ func addHandlers(e *echo.Echo) {
 	e.GET("/stories/:uuid/publish", getPublishStory)
 	e.POST("/stories/publish", publishStory)
 	e.GET("/stories", getStoryList)
-	e.GET("/ws", func(c echo.Context) error {
+	e.GET("/ws/:storyCode", func(c echo.Context) error {
 		m.HandleRequest(c.Response().Writer, c.Request())
 		return nil
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
-		m.Broadcast(msg)
+		m.BroadcastFilter(msg, func(q *melody.Session) bool {
+			return q.Request.URL.Path == s.Request.URL.Path
+		})
 	})
 }
 
