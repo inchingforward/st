@@ -61,6 +61,12 @@ func selectEditableStory(uuid string) (Story, error) {
 	return story, err
 }
 
+func updateStoryAuthors(story *Story) error {
+	_, err := db.Exec(`update story set authors = $1 where id = $2`, story.Authors, story.ID)
+
+	return err
+}
+
 func updatePublishStory(story *Story) error {
 	_, err := db.Exec(`
 		update story 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/flosch/pongo2"
@@ -12,6 +13,11 @@ import (
 	"github.com/labstack/echo-contrib/session"
 
 	"gopkg.in/olahol/melody.v1"
+)
+
+const (
+	MessageTypeStoryAdd     = "STORY_ADD"
+	MessageTypeChangeEditor = "STORY_CHANGE_EDITOR"
 )
 
 type Message struct {
@@ -43,23 +49,31 @@ func addHandlers(e *echo.Echo) {
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
 		fmt.Println(string(msg))
-		var message Message
 
-		err := json.Unmarshal(msg, &message)
-		if err == nil {
-			if message.MessageType == "STORY_ADD" {
-				// FIXME: Find the other author in the story and set the authorName to that author.
-				newMessage := Message{"STORY_CHANGE_EDITOR", message.StoryCode, "CHOOCH", ""}
-				messageB, _ := json.Marshal(newMessage)
-
-				m.Broadcast(messageB)
-			}
-		}
+		handleWebsocketMessage(m, msg)
 
 		m.BroadcastFilter(msg, func(q *melody.Session) bool {
 			return q.Request.URL.Path == s.Request.URL.Path
 		})
 	})
+}
+
+func handleWebsocketMessage(m *melody.Melody, msg []byte) {
+	var message Message
+
+	err := json.Unmarshal(msg, &message)
+	if err != nil {
+		fmt.Printf("Unable to unmarshal message: %v\n", string(msg))
+		return
+	}
+
+	if message.MessageType == MessageTypeStoryAdd {
+		// FIXME: Find the other author in the story and set the authorName to that author.
+		newMessage := Message{MessageTypeChangeEditor, message.StoryCode, "CHOOCH", ""}
+		messageB, _ := json.Marshal(newMessage)
+
+		m.Broadcast(messageB)
+	}
 }
 
 func getHome(c echo.Context) error {
@@ -103,6 +117,7 @@ func createStory(c echo.Context) error {
 
 	// At this point we have a valid story.
 	story.StartedAt = time.Now()
+	story.Authors = author
 	story.UUID = generateStoryUUID()
 	story.Private = false
 
@@ -143,6 +158,31 @@ func joinStory(c echo.Context) error {
 			"Error":      "Please enter your name",
 			"UUID":       uuid,
 		})
+	}
+
+	// Make sure the story exists.
+	story, err := selectEditableStory(uuid)
+	if err != nil {
+		return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
+			"ErrorTitle": "Story Not Found",
+			"Error":      "The story code was not found",
+			"UUID":       uuid,
+		})
+	}
+
+	// Update the authors if this is a new author.
+	if !strings.Contains(story.Authors, authorName) {
+		story.Authors += "," + authorName
+
+		err = updateStoryAuthors(&story)
+
+		if err != nil {
+			return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
+				"ErrorTitle": "Unable to update authors",
+				"Error":      err.Error(),
+				"UUID":       uuid,
+			})
+		}
 	}
 
 	sess, _ := session.Get("session", c)
