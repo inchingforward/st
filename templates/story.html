@@ -14,9 +14,11 @@
 {% endif %}
 
 {% if Parts %}
-    <p>Would show parts here.</p>
+    {% for part in Parts %}
+        <p title="Written by {{ part.WrittenBy }} at {{ part.WrittenAt|time:"01/02/2006 3:04 PM MST" }} ">{{ part.PartText }}</p>
+    {% endfor %}
 {% else %}
-    <p>No parts in this story!</p>
+    <p>No parts were added to this story!</p>
 {% endif %}
 
 {% endblock %}
