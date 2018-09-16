@@ -5,7 +5,7 @@ var StoryTellers = StoryTellers || (function() {
     const STORY_ADD = "STORY_ADD";
     const STORY_CHANGE_EDITOR = "STORY_CHANGE_EDITOR";
 
-    var ws, storyCode, authorName, chatArea, chatInput, storyDiv, storyArea, addToStoryButton;
+    var ws, storyCode, authorName, chatDiv, chatInput, storyDiv, storyArea, addToStoryButton;
 
     function Message(messageType, authorName, content) {
         this.messageType = messageType;
@@ -14,7 +14,7 @@ var StoryTellers = StoryTellers || (function() {
     }
 
     function initPageElements() {
-        chatArea = document.getElementById("chat_area");
+        chatDiv = document.getElementById("chat_div");
         chatInput = document.getElementById("chat_input");
         storyDiv = document.getElementById("story_div");
         storyArea = document.getElementById("story_area");
@@ -32,13 +32,14 @@ var StoryTellers = StoryTellers || (function() {
 
         ws.onmessage = function (msg) {
             var message = JSON.parse(msg.data);
+            var meClass = message.authorName && message.authorName === authorName ? "me" : "them";
 
             if (message.messageType === ACTION_JOIN) {
-                chatArea.value += "** " + message.authorName + " has joined **\n";
+                chatDiv.innerHTML += "<p>" + "- " + message.authorName + " has joined -</p>";
             } else if (message.messageType === CHAT) {
-                chatArea.value += "<" + message.authorName + "> " + message.content + "\n";
+                chatDiv.innerHTML += "<p class=\"" + meClass + "\">" + message.authorName + ": " + message.content + "</p>";
             } else if (message.messageType === STORY_ADD) {
-                storyDiv.innerHTML += "<p title=\"" + message.authorName + "\">" + message.content + "</p>"
+                storyDiv.innerHTML += "<p title=\"" + message.authorName + "\" class=\"" + meClass + "\">" + message.content + "</p>"
                 storyDiv.scrollTop = storyDiv.scrollHeight;
             } else if (message.messageType === STORY_CHANGE_EDITOR) {
                 var canEdit = message.authorName === authorName;
@@ -46,7 +47,7 @@ var StoryTellers = StoryTellers || (function() {
                 addToStoryButton.disabled = !canEdit;
             }
 
-            chatArea.scrollTop = chatArea.scrollHeight;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
         };
 
         chatInput.onkeydown = function (e) {

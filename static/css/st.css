@@ -1,6 +1,12 @@
 a { text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-#chat_area { height: 200px; }
-#story_div { height: 212px; border: 1px solid purple; overflow-y:scroll; }
+#chat_div { height: 200px; font-size: 15px; overflow-y:scroll; }
+#chat_div p { margin: 0; padding: 0; }
+
+.me { color: violet; }
+.them { color: darkviolet; }
+
+#story_div { height: 212px; overflow-y:scroll; }
+#story_div p { margin: 0 0 13px 0; padding: 0; }
 #story_area { height: 75px; margin-top: 10px; }
