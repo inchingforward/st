@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -12,6 +13,13 @@ import (
 
 	"gopkg.in/olahol/melody.v1"
 )
+
+type Message struct {
+	MessageType string
+	StoryCode   string
+	AuthorName  string
+	Content     string
+}
 
 func addHandlers(e *echo.Echo) {
 	m := melody.New()
@@ -34,6 +42,20 @@ func addHandlers(e *echo.Echo) {
 	})
 
 	m.HandleMessage(func(s *melody.Session, msg []byte) {
+		fmt.Println(string(msg))
+		var message Message
+
+		err := json.Unmarshal(msg, &message)
+		if err == nil {
+			if message.MessageType == "STORY_ADD" {
+				// FIXME: Find the other author in the story and set the authorName to that author.
+				newMessage := Message{"STORY_CHANGE_EDITOR", message.StoryCode, "CHOOCH", ""}
+				messageB, _ := json.Marshal(newMessage)
+
+				m.Broadcast(messageB)
+			}
+		}
+
 		m.BroadcastFilter(msg, func(q *melody.Session) bool {
 			return q.Request.URL.Path == s.Request.URL.Path
 		})

@@ -7,8 +7,9 @@ var StoryTellers = StoryTellers || (function() {
 
     var ws, storyCode, authorName, chatDiv, chatInput, storyDiv, storyArea, addToStoryButton;
 
-    function Message(messageType, authorName, content) {
+    function Message(messageType, storyCode, authorName, content) {
         this.messageType = messageType;
+        this.storyCode = storyCode;
         this.authorName = authorName;
         this.content = content;
     }
@@ -32,6 +33,8 @@ var StoryTellers = StoryTellers || (function() {
 
         ws.onmessage = function (msg) {
             var message = JSON.parse(msg.data);
+            console.log("received this message:", message);
+            
             var meClass = message.authorName && message.authorName === authorName ? "me" : "them";
 
             if (message.messageType === ACTION_JOIN) {
@@ -52,7 +55,7 @@ var StoryTellers = StoryTellers || (function() {
 
         chatInput.onkeydown = function (e) {
             if (e.keyCode === 13 && chatInput.value !== "") {
-                var message = new Message(CHAT, authorName, chatInput.value);
+                var message = new Message(CHAT, storyCode, authorName, chatInput.value);
                 
                 ws.send(JSON.stringify(message));
 
@@ -68,7 +71,7 @@ var StoryTellers = StoryTellers || (function() {
                 return;
             }
 
-            var message = new Message(STORY_ADD, authorName, content);
+            var message = new Message(STORY_ADD, storyCode, authorName, content);
             
             ws.send(JSON.stringify(message));
 
@@ -76,15 +79,15 @@ var StoryTellers = StoryTellers || (function() {
         }
 
         ws.onopen = function() {
-            var message = new Message(ACTION_JOIN, authorName);
+            var message = new Message(ACTION_JOIN, storyCode, authorName);
             ws.send(JSON.stringify(message))
         }
 
         chatInput.focus();
     }
 
-    function addToStory(text) {
-        var message = new Message(STORY_ADD, authorName, text);
+    function addToStory(content) {
+        var message = new Message(STORY_ADD, storyCode, authorName, content);
         ws.send(JSON.stringify(message));
     }
 
