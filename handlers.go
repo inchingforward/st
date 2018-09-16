@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -68,12 +69,64 @@ func handleWebsocketMessage(m *melody.Melody, msg []byte) {
 	}
 
 	if message.MessageType == MessageTypeStoryAdd {
-		// FIXME: Find the other author in the story and set the authorName to that author.
-		newMessage := Message{MessageTypeChangeEditor, message.StoryCode, "CHOOCH", ""}
-		messageB, _ := json.Marshal(newMessage)
+		story, err := selectEditableStory(message.StoryCode)
 
-		m.Broadcast(messageB)
+		if err != nil {
+			fmt.Printf("Unable to select story by story code %s: %s", message.StoryCode, err.Error())
+			return
+		}
+
+		err = addStoryPart(m, story, message)
+
+		if err != nil {
+			fmt.Printf("Unable to add story part: %s\n", err.Error())
+		} else {
+			err = changeEditor(m, story, message)
+		}
 	}
+}
+
+func addStoryPart(m *melody.Melody, story Story, message Message) error {
+	currentParts, err := selectPublishedStoryParts(story.ID)
+
+	if err != nil {
+		return err
+	}
+
+	storyPart := new(StoryPart)
+
+	storyPart.StoryID = story.ID
+	storyPart.PartText = message.Content
+	storyPart.PartNum = len(currentParts) + 1
+	storyPart.WrittenBy = message.AuthorName
+	storyPart.WrittenAt = time.Now()
+
+	return insertStoryPart(storyPart)
+}
+
+func changeEditor(m *melody.Melody, story Story, addStoryMessage Message) error {
+	authors := strings.Split(story.Authors, ",")
+
+	nextAuthor := ""
+
+	if len(authors) == 0 {
+		return errors.New("No authors found")
+	} else if len(authors) == 1 {
+		nextAuthor = addStoryMessage.AuthorName
+	} else {
+		if authors[0] == addStoryMessage.AuthorName {
+			nextAuthor = authors[1]
+		} else {
+			nextAuthor = authors[0]
+		}
+	}
+
+	newMessage := Message{MessageTypeChangeEditor, story.UUID, nextAuthor, ""}
+	messageB, _ := json.Marshal(newMessage)
+
+	m.Broadcast(messageB)
+
+	return nil
 }
 
 func getHome(c echo.Context) error {
@@ -166,6 +219,16 @@ func joinStory(c echo.Context) error {
 		return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
 			"ErrorTitle": "Story Not Found",
 			"Error":      "The story code was not found",
+			"UUID":       uuid,
+		})
+	}
+
+	// Only allow 2 authors.
+	authors := strings.Split(story.Authors, ",")
+	if len(authors) == 2 && !strings.Contains(story.Authors, authorName) {
+		return c.Render(http.StatusBadRequest, "story_join.html", pongo2.Context{
+			"ErrorTitle": "Only 2 Authors Allowed",
+			"Error":      "Stories are limited to 2 authors",
 			"UUID":       uuid,
 		})
 	}
@@ -265,8 +328,6 @@ func publishStory(c echo.Context) error {
 			"Error": "Invalid fields",
 		})
 	}
-
-	// FIXME: combine all related authors.
 
 	updatedPrivate := c.FormValue("private") == "on"
 

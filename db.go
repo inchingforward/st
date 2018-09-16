@@ -103,3 +103,9 @@ func selectPublishedStoryParts(storyID uint64) ([]StoryPart, error) {
 
 	return parts, err
 }
+
+func insertStoryPart(storyPart *StoryPart) error {
+	_, err := db.Exec("insert into story_part values (default, $1, $2, $3, $4, $5)", storyPart.StoryID, storyPart.PartNum, storyPart.PartText, storyPart.WrittenBy, storyPart.WrittenAt)
+
+	return err
+}
